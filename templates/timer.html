@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container" style="text-align: center; max-width: 500px; margin: 0 auto;">
+    <h2><i class="fa-solid fa-hourglass-half"></i>Gym Rest Timer</h2>
+    <p>Optimize your recovery periods between working sets to maximize your workout performance.</p>
+    
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+    <div id="timer-display" style="font-size: 4rem; font-weight: bold; font-family: monospace; margin: 20px 0; color: var(--text-main); letter-spacing: 2px;">
+        01:30
+    </div>
+    
+    <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 25px; flex-wrap: wrap;">
+        <button type="button" class="btn" style="padding: 8px 16px; font-size: 0.9rem; background-color: var(--border-color); color: var(--text-main); border: 1px solid transparent; border-radius: 4px; cursor: pointer;" onclick="setTimer(30)">30s</button>
+        <button type="button" class="btn" style="padding: 8px 16px; font-size: 0.9rem; background-color: var(--border-color); color: var(--text-main); border: 1px solid transparent; border-radius: 4px; cursor: pointer;" onclick="setTimer(60)">1m</button>
+        <button type="button" class="btn" style="padding: 8px 16px; font-size: 0.9rem; background-color: var(--border-color); color: var(--text-main); border: 1px solid transparent; border-radius: 4px; cursor: pointer;" onclick="setTimer(90)">1m 30s</button>
+        <button type="button" class="btn" style="padding: 8px 16px; font-size: 0.9rem; background-color: var(--border-color); color: var(--text-main); border: 1px solid transparent; border-radius: 4px; cursor: pointer;" onclick="setTimer(120)">2m</button>
+    </div>
+    
+    <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" id="timer-start-btn" class="btn-submit" style="background-color: #28a745; margin: 0; min-width: 120px;" onclick="toggleTimer()">Start</button>
+        <button type="button" class="btn-submit" style="background-color: #dc3545; margin: 0; min-width: 120px;" onclick="resetTimer()">Reset</button>
+    </div>
+
+    <div style="margin-top: 30px; font-size: 0.85rem;">
+        <a href="{{ url_for('dashboard') }}" style="color:var(--text-main); text-decoration: underline;">
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+    let timerInterval = null;
+    let timeRemaining = 90; // Default baseline value: 90 seconds (1:30)
+    let isRunning = false;
+    
+    // Global variable to keep track of the browser audio system
+    let audioCtx = null;
+
+    const display = document.getElementById('timer-display');
+    const startBtn = document.getElementById('timer-start-btn');
+
+    // Formats seconds into a clean MM:SS format layout string
+    function updateDisplay() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        display.textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Handles changing the duration via preset interval buttons
+    function setTimer(seconds) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        timeRemaining = seconds;
+        startBtn.textContent = "Start";
+        startBtn.style.backgroundColor = "#28a745";
+        display.style.color = "var(--text-main)";
+        updateDisplay();
+    }
+
+    // Handles play/pause mechanics
+    function toggleTimer() {
+        if (isRunning) {
+            clearInterval(timerInterval);
+            startBtn.textContent = "Start";
+            startBtn.style.backgroundColor = "#28a745";
+            isRunning = false;
+        } else {
+            if (timeRemaining <= 0) return;
+            
+            // 🔒 FIX: Initialize the audio system right now when the user clicks "Start"
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            // If the browser previously put the audio system to sleep, wake it back up
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            isRunning = true;
+            startBtn.textContent = "Pause";
+            startBtn.style.backgroundColor = "#ffc107"; // Warning yellow when running
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    startBtn.textContent = "Start";
+                    startBtn.style.backgroundColor = "#28a745";
+                    display.style.color = "#dc3545"; // Warning red alert text color
+
+                    let beepCount = 0;
+                    
+                    // Creates an alarm cadence intervals every 600ms using the authorized audioCtx
+                    const alarmInterval = setInterval(() => {
+                        const oscillator = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain(); 
+                        
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Crisp A5 frequency tone
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        
+                        oscillator.start();
+                        oscillator.stop(audioCtx.currentTime + 0.25); // Sound lasts for 250ms
+                        
+                        beepCount++;
+                        
+                        // Terminates the runtime tracking loop safely after 4 pulses
+                        if (beepCount >= 4) {
+                            clearInterval(alarmInterval);
+                            setTimeout(() => { 
+                                display.style.color = "var(--text-main)"; 
+                            }, 1000);
+                        }
+                    }, 600);
+                }
+            }, 1000);
+        }
+    }
+
+    // Clears active loops and defaults back to default layout settings
+    function resetTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+        timeRemaining = 90; 
+        startBtn.textContent = "Start";
+        startBtn.style.backgroundColor = "#28a745";
+        display.style.color = "var(--text-main)";
+        updateDisplay();
+    }
+
+    // Run layout initializer loop when page first parses
+    updateDisplay();
+</script>
+{% endblock %}
