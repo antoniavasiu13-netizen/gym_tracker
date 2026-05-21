@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Gym Attendance</h2>
+    <p>Record today's workout!</p>
+
+    <form action="{{ url_for('workout_info') }}" method="POST">
+        
+        <fieldset>
+            <legend>Attendance Verification</legend>
+            <label for="workout_date">Workout Date:</label>
+            <input type="date" id="workout_date" name="workout_date" 
+                   max="{{ today_date }}" 
+                   value="{{ today_date }}" 
+                   required>
+        </fieldset>
+
+        <fieldset>
+            <legend>Target Split Focus</legend>
+            <p style="font-size: 12px; margin-bottom: 8px; font-weight: bold;">Select Primary Muscle System:</p>
+            
+            <div style="margin-bottom: 6px;">
+                <input type="radio" id="chest" name="body_part" value="Chest & Triceps" checked>
+                <label for="chest" style="display:inline;">Chest &amp; Triceps</label>
+            </div>
+            
+            <div style="margin-bottom: 6px;">
+                <input type="radio" id="back" name="body_part" value="Back & Biceps">
+                <label for="back" style="display:inline;">Back &amp; Biceps</label>
+            </div>
+            
+            <div style="margin-bottom: 6px;">
+                <input type="radio" id="legs" name="body_part" value="Lower Body (Legs)">
+                <label for="legs" style="display:inline;">Lower Body (Legs)</label>
+            </div>
+            
+            <div style="margin-bottom: 6px;">
+                <input type="radio" id="core" name="body_part" value="Core & Abs">
+                <label for="core" style="display:inline;">Core &amp; Abs</label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Intensity</legend>
+            <label for="intensity">Training Effort Rating:</label>
+            <select id="intensity" name="intensity">
+                <option value="Light Recovery">Light</option>
+                <option value="Moderate Pace" selected>Moderate</option>
+                <option value="Maximum Effort">Maximum Effort</option>
+            </select>
+        </fieldset>
+
+        <button type="submit" class="btn-submit">Confirm </button>
+    </form>
+</div>
+
+<div class="settings-container" style="max-width: 500px; margin-top: 20px; padding: 20px; background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--shadow);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="color: var(--heading-color); margin: 0;">
+            <i class="fa-regular fa-calendar-check"></i> My Attendance History
+        </h3>
+        
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <button id="prev-month-btn" type="button" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 4px;">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span id="tracker-calendar-month-year" style="font-size: 14px; font-weight: 600; color: var(--text-muted);"></span>
+            <button id="next-month-btn" type="button" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 4px;">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <hr class="card-divider" style="margin-bottom: 15px; border: 0; border-top: 1px solid var(--border-color);">
+
+    <div class="calendar-container">
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">
+            <div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div>
+        </div>
+        
+        <div id="tracker-calendar-days-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;"></div>
+    </div>
+</div>
+
+<div id="raw-history-data" data-logs="[ {% for entry in personal_history %}&quot;{{ entry.date }}&quot;{% if not loop.last %},{% endif %}{% endfor %} ]" style="display: none;"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const gridContainer = document.getElementById('tracker-calendar-days-grid');
+        const monthYearLabel = document.getElementById('tracker-calendar-month-year');
+        const historyAnchor = document.getElementById('raw-history-data');
+        const prevBtn = document.getElementById('prev-month-btn');
+        const nextBtn = document.getElementById('next-month-btn');
+
+        if (!gridContainer || !historyAnchor || !prevBtn || !nextBtn) return;
+
+        
+        const rawLoggedDates = JSON.parse(historyAnchor.getAttribute('data-logs') || '[]');
+        
+        
+        const trueToday = new Date();
+        let activeViewDate = new Date(trueToday.getFullYear(), trueToday.getMonth(), 1);
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        function buildCalendarView() {
+            const currentYear = activeViewDate.getFullYear();
+            const currentMonth = activeViewDate.getMonth(); 
+
+            
+            monthYearLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            
+            gridContainer.innerHTML = '';
+
+            const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            let firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+            
+            firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1; 
+
+            
+            for (let i = 0; i < firstDayIndex; i++) {
+                const padNode = document.createElement('div');
+                padNode.classList.add('calendar-day-box', 'empty-pad');
+                padNode.style.backgroundColor = 'transparent';
+                padNode.style.pointerEvents = 'none';
+                gridContainer.appendChild(padNode);
+            }
+
+            
+            for (let day = 1; day <= totalDaysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.classList.add('calendar-day-box');
+                dayCell.textContent = day;
+
+                
+                const currentStringDay = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                dayCell.style.aspectRatio = '1';
+                dayCell.style.display = 'flex';
+                dayCell.style.alignItems = 'center';
+                dayCell.style.justifyContent = 'center';
+                dayCell.style.fontSize = '13px';
+                dayCell.style.fontWeight = '600';
+                dayCell.style.borderRadius = '6px';
+
+                
+                if (rawLoggedDates.includes(currentStringDay)) { 
+                    dayCell.style.backgroundColor = '#2b9348'; 
+                    dayCell.style.color = '#ffffff';
+                    dayCell.setAttribute('title', 'Logged Training Session!');
+                } else {
+                    dayCell.style.backgroundColor = 'var(--border-color)';
+                    dayCell.style.color = 'var(--text-main)';
+                }
+
+                
+                if (day === trueToday.getDate() && currentMonth === trueToday.getMonth() && currentYear === trueToday.getFullYear()) {
+                    dayCell.style.outline = '2px solid var(--accent-color)';
+                    dayCell.style.outlineOffset = '-2px';
+                }
+
+                gridContainer.appendChild(dayCell);
+            }
+
+            
+            if (currentYear >= trueToday.getFullYear() && currentMonth >= trueToday.getMonth()) {
+                nextBtn.style.opacity = "0.25";
+                nextBtn.style.pointerEvents = "none";
+            } else {
+                nextBtn.style.opacity = "1";
+                nextBtn.style.pointerEvents = "auto";
+            }
+        }
+
+        
+        prevBtn.addEventListener('click', function() {
+            activeViewDate.setMonth(activeViewDate.getMonth() - 1);
+            buildCalendarView();
+        });
+
+        nextBtn.addEventListener('click', function() {
+            activeViewDate.setMonth(activeViewDate.getMonth() + 1);
+            buildCalendarView();
+        });
+
+        
+        buildCalendarView();
+    });
+</script>
+{% endblock %}
