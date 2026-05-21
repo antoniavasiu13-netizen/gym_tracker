@@ -1,0 +1,42 @@
+<!--Declaration of document to be html-->
+<!DOCTYPE html>
+<!--Our content through the root of the html-->
+<html lang="en">
+<head>
+    <meta name="author" content="Angela Karaj & Antonia Vasiu">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LockGym</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="{{ session.get('theme', 'light') }}"> 
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="app-logo">LockGym</div>
+            
+            <nav class="nav-links">
+                {% if session.get('username') %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('workout_info') }}">Workout Tracker</a>
+                    <a href="{{ url_for('library') }}">Workout Exercises</a>
+                    <a href="{{ url_for('timer') }}">Timer</a> 
+                    <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+                {% endif %}
+                
+                <a href="{{ url_for('toggle_theme') }}" class="theme-toggle-pill">
+                    {% if session.get('theme') == 'dark' %} Light Mode {% else %} Dark Mode {% endif %}
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>
+
