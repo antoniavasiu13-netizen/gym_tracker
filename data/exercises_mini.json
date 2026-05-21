@@ -1,0 +1,218 @@
+[
+  {
+    "id": "0018",
+    "name": "assisted standing triceps extension (with towel)",
+    "body_part": "Chest & Triceps",
+    "equipment": "assisted",
+    "target": "triceps",
+    "instructions": {
+      "en": "Stand with your feet shoulder-width apart and hold a towel with both hands behind your head. Keep your elbows close to your ears and your upper arms stationary. Slowly extend your forearms upward, squeezing your triceps at the top. Pause for a moment, then slowly lower the towel back down to the starting position."
+    },
+    "gif_url": "videos/0018-7HcfMBP.gif",
+    "image": "images/0018-7HcfMBP.jpg"
+  },
+  {
+    "id": "0019",
+    "name": "assisted triceps dip (kneeling)",
+    "body_part": "Chest & Triceps",
+    "equipment": "leverage machine",
+    "target": "triceps",
+    "instructions": {
+      "en": "Adjust the machine to your desired weight and height. Kneel down on the pad facing the machine, with your hands gripping the handles. Lower your body by bending your elbows, keeping your back straight and close to the machine. Pause for a moment at the bottom, then push yourself back up to the starting position."
+    },
+    "gif_url": "videos/0019-J60bN17.gif",
+    "image": "images/0019-J60bN17.jpg"
+  },
+  {
+    "id": "1254",
+    "name": "band bench press",
+    "body_part": "Chest & Triceps",
+    "equipment": "band",
+    "target": "pectorals",
+    "instructions": {
+      "en": "Lie flat on a bench with your feet flat on the ground and your back pressed against the bench. Grasp the band handles with an overhand grip, slightly wider than shoulder-width apart. Extend your arms fully, pushing the bands away from your chest. Slowly lower the bands back down to your chest, keeping your elbows at a 90-degree angle."
+    },
+    "gif_url": "videos/1254-khlHMqs.gif",
+    "image": "images/1254-khlHMqs.jpg"
+  },
+  {
+    "id": "0975",
+    "name": "band close-grip push-up",
+    "body_part": "Chest & Triceps",
+    "equipment": "band",
+    "target": "triceps",
+    "instructions": {
+      "en": "Place a band around your upper arms, just above the elbows. Assume a push-up position with your hands directly under your shoulders and your body in a straight line from head to heels. Bend your elbows and lower your chest towards the ground, keeping your elbows close to your sides. Push through your palms to extend your arms."
+    },
+    "gif_url": "videos/0975-ufaxB52.gif",
+    "image": "images/0975-ufaxB52.jpg"
+  },
+  {
+    "id": "0998",
+    "name": "band side triceps extension",
+    "body_part": "Chest & Triceps",
+    "equipment": "band",
+    "target": "triceps",
+    "instructions": {
+      "en": "Stand with your feet shoulder-width apart and hold the band with both hands, palms facing down. Extend your arms straight out to the sides, keeping them parallel to the ground. Slowly bend your elbows and bring your hands towards your shoulders, keeping your upper arms still. Pause for a moment, then slowly extend your arms back out."
+    },
+    "gif_url": "videos/0998-obe5LMq.gif",
+    "image": "images/0998-obe5LMq.jpg"
+  },
+  {
+    "id": "0007",
+    "name": "alternate lateral pulldown",
+    "body_part": "Back & Biceps",
+    "equipment": "cable",
+    "target": "lats",
+    "instructions": {
+      "en": "Sit on the cable machine with your back straight and feet flat on the ground. Grasp the handles with an overhand grip, slightly wider than shoulder-width apart. Lean back slightly and pull the handles towards your chest, squeezing your shoulder blades together. Pause for a moment, then slowly release back."
+    },
+    "gif_url": "videos/0007-4IKbhHV.gif",
+    "image": "images/0007-4IKbhHV.jpg"
+  },
+  {
+    "id": "0968",
+    "name": "band alternating biceps curl",
+    "body_part": "Back & Biceps",
+    "equipment": "band",
+    "target": "biceps",
+    "instructions": {
+      "en": "Stand with your feet shoulder-width apart and hold the band with an underhand grip, palms facing up. Keep your elbows close to your sides and slowly curl one arm up towards your shoulder, squeezing your biceps at the top. Lower the arm back down and repeat with the other arm."
+    },
+    "gif_url": "videos/0968-3omWx6P.gif",
+    "image": "images/0968-3omWx6P.jpg"
+  },
+  {
+    "id": "0974",
+    "name": "band close-grip pulldown",
+    "body_part": "Back & Biceps",
+    "equipment": "band",
+    "target": "lats",
+    "instructions": {
+      "en": "Attach the band to a high anchor point. Stand facing the anchor point and grab the band with an underhand grip, hands shoulder-width apart. Step back to create tension. Engage your core and keep your back straight as you pull the band down towards your chest, squeezing your shoulder blades."
+    },
+    "gif_url": "videos/0974-DptumMx.gif",
+    "image": "images/0974-DptumMx.jpg"
+  },
+  {
+    "id": "0986",
+    "name": "band one arm overhead biceps curl",
+    "body_part": "Back & Biceps",
+    "equipment": "band",
+    "target": "biceps",
+    "instructions": {
+      "en": "Stand with your feet shoulder-width apart and place one end of the band under your foot. Hold the other end of the band with your arm fully extended overhead. Keeping your upper arm stationary, curl your forearm towards your shoulder, squeezing your biceps."
+    },
+    "gif_url": "videos/0986-UNAB8ak.gif",
+    "image": "images/0986-UNAB8ak.jpg"
+  },
+  {
+    "id": "0980",
+    "name": "band bent-over hip extension",
+    "body_part": "Lower Body (Legs)",
+    "equipment": "band",
+    "target": "glutes",
+    "instructions": {
+      "en": "Attach the band to a sturdy anchor point at ankle height. Stand facing away from the anchor point with your feet shoulder-width apart. Hinge at the hips and lean forward. Extend your right leg straight back, squeezing your glutes at the top. Lower back down and repeat with the left leg."
+    },
+    "gif_url": "videos/0980-wSScovH.gif",
+    "image": "images/0980-wSScovH.jpg"
+  },
+  {
+    "id": "0987",
+    "name": "band one arm single leg split squat",
+    "body_part": "Lower Body (Legs)",
+    "equipment": "band",
+    "target": "quads",
+    "instructions": {
+      "en": "Stand with your feet hip-width apart and place a resistance band around your ankles. Extend one leg forward and rest the top of your foot on a bench behind you. Bend your standing leg and lower your body down into a squat position, keeping your knee in line with your toes."
+    },
+    "gif_url": "videos/0987-arsYEd3.gif",
+    "image": "images/0987-arsYEd3.jpg"
+  },
+  {
+    "id": "1001",
+    "name": "band single leg split squat",
+    "body_part": "Lower Body (Legs)",
+    "equipment": "band",
+    "target": "quads",
+    "instructions": {
+      "en": "Stand with your feet hip-width apart and place a resistance band around your ankles. Take a big step forward with your right foot and a smaller step back with your left foot. Bend your knees and lower your body until your right thigh is parallel to the ground."
+    },
+    "gif_url": "videos/1001-y8bYM8w.gif",
+    "image": "images/1001-y8bYM8w.jpg"
+  },
+  {
+    "id": "1004",
+    "name": "band squat",
+    "body_part": "Lower Body (Legs)",
+    "equipment": "band",
+    "target": "glutes",
+    "instructions": {
+      "en": "Stand with your feet shoulder-width apart, with the band placed just above your knees. Keeping your chest up and core engaged, push your hips back and bend your knees to lower into a squat position. Push through your heels to return."
+    },
+    "gif_url": "videos/1004-TUZLh71.gif",
+    "image": "images/1004-TUZLh71.jpg"
+  },
+  {
+    "id": "1003",
+    "name": "band squat row",
+    "body_part": "Lower Body (Legs)",
+    "equipment": "band",
+    "target": "glutes",
+    "instructions": {
+      "en": "Attach the band to a sturdy anchor point at waist height. Stand facing the anchor point with feet shoulder-width apart. Hold the handles with arms extended. Bend your knees into a squat position, and pull the handles towards your body, squeezing your shoulder blades together."
+    },
+    "gif_url": "videos/1003-w1NOByi.gif",
+    "image": "images/1003-w1NOByi.jpg"
+  },
+  {
+    "id": "0001",
+    "name": "3/4 sit-up",
+    "body_part": "Core & Abs",
+    "equipment": "body weight",
+    "target": "abs",
+    "instructions": {
+      "en": "Lie flat on your back with your knees bent and feet flat on the ground. Place your hands behind your head with your elbows pointing outwards. Engaging your abs, slowly lift your upper body off the ground, curling forward until your torso is at a 45-degree angle."
+    },
+    "gif_url": "videos/0001-2gPfomN.gif",
+    "image": "images/0001-2gPfomN.jpg"
+  },
+  {
+    "id": "0002",
+    "name": "45° side bend",
+    "body_part": "Core & Abs",
+    "equipment": "body weight",
+    "target": "abs",
+    "instructions": {
+      "en": "Stand with your feet shoulder-width apart and your arms extended straight down by your sides. Keeping your back straight and your core engaged, slowly bend your torso to one side, lowering your hand towards your knee. Return and repeat on the other side."
+    },
+    "gif_url": "videos/0002-Hy9D21L.gif",
+    "image": "images/0002-Hy9D21L.jpg"
+  },
+  {
+    "id": "0003",
+    "name": "air bike",
+    "body_part": "Core & Abs",
+    "equipment": "body weight",
+    "target": "abs",
+    "instructions": {
+      "en": "Lie flat on your back with your hands placed behind your head. Lift your legs off the ground and bend your knees at a 90-degree angle. Bring your right elbow towards your left knee while simultaneously straightening your right leg. Continue alternating sides."
+    },
+    "gif_url": "videos/0003-1ZFqTDN.gif",
+    "image": "images/0003-1ZFqTDN.jpg"
+  },
+  {
+    "id": "0006",
+    "name": "alternate heel touchers",
+    "body_part": "Core & Abs",
+    "equipment": "body weight",
+    "target": "abs",
+    "instructions": {
+      "en": "Lie flat on your back with your knees bent and feet flat on the ground. Extend your arms straight out to the sides. Engaging your abs, lift your shoulders off the ground and reach your right hand towards your right heel. Alternate sides."
+    },
+    "gif_url": "videos/0006-qaZVsGk.gif",
+    "image": "images/0006-qaZVsGk.jpg"
+  }
+]
