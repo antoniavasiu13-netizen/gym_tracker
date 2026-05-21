@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="login-card">
+    <h2>LockGym Login</h2>
+
+    {% if error %}
+        <div style="background-color: rgba(220, 53, 69, 0.1); color: var(--accent-color); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; text-align: center; border: 1px solid var(--accent-color); font-weight: 500;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form action="{{ url_for('home') }}" method="POST">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required placeholder="e.g. Your Name">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required placeholder="••••••••">
+        </div>
+        
+        <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+            <input type="checkbox" id="remember_me" name="remember_me">
+            <label for="remember_me" style="display: inline; font-size: 13px; font-weight: normal; cursor: pointer;">Remember me</label>
+        </div>
+
+        <button type="submit" class="btn-submit" style="width: 100%;">Log in</button>
+    </form>
+</div>
+{% endblock %}
