@@ -74,7 +74,8 @@
                 </button>
             </div>
         </div> {% endfor %} </div> </div> <script>
-    // 1. Text-To-Speech Playback Script Engine
+            
+    // Accessibility text reader
     function speakExercise(exerciseName, instructionsElementId) {
         window.speechSynthesis.cancel();
 
@@ -88,7 +89,7 @@
         window.speechSynthesis.speak(utterance);
     }
 
-    // 2. Live client-side search filtering logic (Name, Body Part, & Target)
+    // Search bar
     const searchInput = document.getElementById('library-search');
     const cards = document.querySelectorAll('.searchable-card');
 
