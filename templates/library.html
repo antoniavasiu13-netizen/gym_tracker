@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-content">
+    
+    <div class="library-header" style="margin-bottom: 40px; text-align: center;">
+        <h2 style="font-size: 28px; margin-bottom: 10px;">Workout Exercise Library</h2>
+        <p>Build your workout routine. Search available exercises by name, body part, or target muscle!</p>
+        
+        <div style="margin-top: 25px; display: flex; justify-content: center; width: 100%; padding: 0 20px;">
+            
+            <label for="library-search" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+                Search Exercise Library
+            </label>
+            
+            <div style="position: relative; max-width: 450px; width: 100%;">
+                
+                <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; z-index: 3; font-size: 16px;">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                
+                <input type="text" id="library-search" placeholder="Search exercises..."
+                       style="width: 100%; padding: 12px 16px 12px 46px; border: 2px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg); color: var(--text-main); font-size: 15px; box-shadow: var(--shadow); outline: none;">
+                       
+            </div>
+        </div>
+    </div>
+
+    <div class="exercise-grid">
+        {% for exercise in exercises %}
+        <div class="exercise-card searchable-card" role="article" aria-labelledby="ex-title-{{ loop.index }}">
+            
+            <span class="card-badge" aria-label="Target body region: {{ exercise.body_part }}">{{ exercise.body_part | upper }}</span>
+            
+            <h3 class="exercise-title" id="ex-title-{{ loop.index }}">{{ exercise.name | title }}</h3>
+            
+            <div class="exercise-meta">
+                <span><strong>Equipment:</strong> {{ exercise.equipment }}</span>
+                <span><strong>Target:</strong> {{ exercise.target }}</span>
+            </div>
+
+            {% if exercise.gif_url %}
+            <div class="exercise-media-container" style="margin: 15px 0; text-align: center;">
+                <img src="{{ url_for('static', filename=exercise.gif_url) }}" 
+                     alt="Looping visual form mechanics demonstration." 
+                     aria-labelledby="ex-title-{{ loop.index }}"
+                     aria-describedby="ex-desc-{{ loop.index }}"
+                     loading="lazy"
+                     style="width: 100%; max-width: 280px; height: auto; border-radius: 8px; border: 1px solid var(--border-color); display: block; margin: 0 auto;">
+            </div>
+            {% elif exercise.image %}
+            <div class="exercise-media-container" style="margin: 15px 0; text-align: center;">
+                <img src="{{ url_for('static', filename=exercise.image) }}" 
+                     alt="Static target posture demonstration." 
+                     aria-labelledby="ex-title-{{ loop.index }}"
+                     aria-describedby="ex-desc-{{ loop.index }}"
+                     loading="lazy"
+                     style="width: 100%; max-width: 280px; height: auto; border-radius: 8px; border: 1px solid var(--border-color); display: block; margin: 0 auto;">
+            </div>
+            {% endif %}
+
+            <div class="instructions-box">
+                <h4>Instructions:</h4>
+                <p id="ex-desc-{{ loop.index }}" style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 15px;">
+                    {{ exercise.instructions.en }}
+                </p>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <button type="button" class="btn-submit" 
+                        onclick="speakExercise('{{ exercise.name | escape }}', 'ex-desc-{{ loop.index }}')" 
+                        style="padding: 8px 16px; font-size: 13px; width: auto; background-color: var(--text-muted); color: white; display: inline-flex; align-items: center; gap: 6px;">
+                     <i class="fa-solid fa-volume-high"></i> Read Instructions
+                </button>
+            </div>
+        </div> {% endfor %} </div> </div> <script>
+    // 1. Text-To-Speech Playback Script Engine
+    function speakExercise(exerciseName, instructionsElementId) {
+        window.speechSynthesis.cancel();
+
+        const instructionsText = document.getElementById(instructionsElementId).textContent;
+        const fullNarrative = `Exercise: ${exerciseName}. Instructions: ${instructionsText}`;
+        const utterance = new SpeechSynthesisUtterance(fullNarrative);
+        
+        utterance.lang = 'en-US';
+        utterance.rate = 0.95; 
+        
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // 2. Live client-side search filtering logic (Name, Body Part, & Target)
+    const searchInput = document.getElementById('library-search');
+    const cards = document.querySelectorAll('.searchable-card');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.exercise-title').textContent.toLowerCase();
+                const badge = card.querySelector('.card-badge').textContent.toLowerCase();
+                const metaText = card.querySelector('.exercise-meta').textContent.toLowerCase();
+                
+                if (title.includes(query) || badge.includes(query) || metaText.includes(query)) {
+                    card.style.display = "";  
+                } else {
+                    card.style.display = "none";  
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}
