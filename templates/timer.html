@@ -32,16 +32,15 @@
 
 <script>
     let timerInterval = null;
-    let timeRemaining = 90; // Default baseline value: 90 seconds (1:30)
+    let timeRemaining = 90; 
     let isRunning = false;
     
-    // Global variable to keep track of the browser audio system
     let audioCtx = null;
 
     const display = document.getElementById('timer-display');
     const startBtn = document.getElementById('timer-start-btn');
 
-    // Formats seconds into a clean MM:SS format layout string
+
     function updateDisplay() {
         const minutes = Math.floor(timeRemaining / 60);
         const seconds = timeRemaining % 60;
@@ -49,7 +48,6 @@
             `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
-    // Handles changing the duration via preset interval buttons
     function setTimer(seconds) {
         clearInterval(timerInterval);
         isRunning = false;
@@ -60,7 +58,7 @@
         updateDisplay();
     }
 
-    // Handles play/pause mechanics
+ 
     function toggleTimer() {
         if (isRunning) {
             clearInterval(timerInterval);
@@ -70,19 +68,19 @@
         } else {
             if (timeRemaining <= 0) return;
             
-            // 🔒 FIX: Initialize the audio system right now when the user clicks "Start"
+           
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
             
-            // If the browser previously put the audio system to sleep, wake it back up
+            
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
             
             isRunning = true;
             startBtn.textContent = "Pause";
-            startBtn.style.backgroundColor = "#ffc107"; // Warning yellow when running
+            startBtn.style.backgroundColor = "#ffc107"; 
             
             timerInterval = setInterval(() => {
                 timeRemaining--;
@@ -93,27 +91,27 @@
                     isRunning = false;
                     startBtn.textContent = "Start";
                     startBtn.style.backgroundColor = "#28a745";
-                    display.style.color = "#dc3545"; // Warning red alert text color
+                    display.style.color = "#dc3545"; 
 
                     let beepCount = 0;
                     
-                    // Creates an alarm cadence intervals every 600ms using the authorized audioCtx
+                
                     const alarmInterval = setInterval(() => {
                         const oscillator = audioCtx.createOscillator();
                         const gainNode = audioCtx.createGain(); 
                         
                         oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Crisp A5 frequency tone
+                        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
                         
                         oscillator.connect(gainNode);
                         gainNode.connect(audioCtx.destination);
                         
                         oscillator.start();
-                        oscillator.stop(audioCtx.currentTime + 0.25); // Sound lasts for 250ms
+                        oscillator.stop(audioCtx.currentTime + 0.25); 
                         
                         beepCount++;
                         
-                        // Terminates the runtime tracking loop safely after 4 pulses
+                        
                         if (beepCount >= 4) {
                             clearInterval(alarmInterval);
                             setTimeout(() => { 
@@ -126,7 +124,7 @@
         }
     }
 
-    // Clears active loops and defaults back to default layout settings
+    
     function resetTimer() {
         clearInterval(timerInterval);
         isRunning = false;
@@ -137,7 +135,7 @@
         updateDisplay();
     }
 
-    // Run layout initializer loop when page first parses
+   
     updateDisplay();
 </script>
 {% endblock %}
