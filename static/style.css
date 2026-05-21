@@ -180,7 +180,7 @@ label {
     font-weight: 600;
 }
 
-input[type="text"], input[type="date"], select {
+input[type="text"],input[type="password"], input[type="date"], select {
     width: 100%;
     padding: 10px 14px;
     border: 2px solid var(--border-color); 
