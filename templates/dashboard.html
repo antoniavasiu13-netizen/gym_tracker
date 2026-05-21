@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="dashboard-layout">
+    
+    <main class="main-content" style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="form-container" style="margin-bottom: 0;">
+            <h2>Nice to see you here, {{ session.get('username') }}!</h2>
+            <p>Track your sessions, set goals, and view your progress.</p>
+            
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('workout_info') }}" class="btn-submit" style="display: inline-block; text-decoration: none; text-align: center;">
+                   Access Workout Tracker
+                </a>
+            </div>
+        </div>
+
+        <div class="weather-widget">
+    <div class="weather-info">
+        <span class="weather-icon" style="font-size: 28px; color: var(--text-muted); display: flex; align-items: center;">
+            <i class="fa-solid {{ weather_icon }}"></i>
+        </span>
+        
+        <div class="weather-details" style="display: flex; flex-direction: column;">
+            <h4 class="weather-temp">{{ weather_temp }}</h4>
+            <p class="weather-condition">{{ weather_desc }}</p>
+        </div>
+    </div>
+    <div class="weather-advice">
+        <p>{{ gym_recommendation }}</p>
+    </div>
+</div>
+    </main>
+
+    <aside class="sidebar-column">
+        
+        <div class="sidebar-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3> <i class="fa-solid fa-user" style="margin-right: 8px;"></i>My Profile</h3>
+                <button type="button" id="edit-profile-btn" onclick="toggleProfileEdit()" style="background: none; border: none; color: var(--accent-color); font-weight: 600; font-size: 14px; cursor: pointer;">
+                    Edit
+                </button>
+            </div>
+            <hr class="card-divider">
+            
+            <div id="profile-view-mode" class="profile-details">
+                <p><strong>Goal:</strong> <span class="stat-value">{{ user_goals.goal if user_goals.goal else 'Not Set' }}</span></p>
+                <p><strong>Current Weight:</strong> <span class="stat-value">{{ user_goals.current_weight if user_goals.current_weight else '--' }} kg</span></p>
+                <p><strong>Target Weight:</strong> <span class="stat-value">{{ user_goals.target_weight if user_goals.target_weight else '--' }} kg</span></p>
+                <p><strong>Streak:</strong> <span class="stat-value"> {{ user_goals.streak if user_goals.streak else '0' }} Days</span></p>
+            </div>
+
+            <form id="profile-edit-mode" method="POST" action="{{ url_for('dashboard') }}" style="display: none;">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="goal-select" style="font-size: 12px; margin-bottom: 4px;">Goal</label>
+                    <select id="goal-select" name="goal" required style="padding: 6px 10px; font-size: 13px; width: 100%; height: auto;">
+                        <option value="" disabled {% if not user_goals.goal %}selected{% endif %}>Select your goal...</option>
+                        <option value="Lean Bulk" {% if user_goals.goal == 'Weight Gain' %}selected{% endif %}> Weight Gain</option>
+                        <option value="Weight Loss" {% if user_goals.goal == 'Weight Loss' %}selected{% endif %}>Weight Loss</option>
+                        <option value="Muscle Maintenance" {% if user_goals.goal == 'Muscle Maintenance' %}selected{% endif %}> Muscle Maintenance</option>
+                        <option value="Strength Training" {% if user_goals.goal == 'Strength Training' %}selected{% endif %}>Strength Training</option>
+                        <option value="Endurance & Cardio" {% if user_goals.goal == 'Endurance & Cardio' %}selected{% endif %}>Endurance &amp; Cardio</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="current-weight-input" style="font-size: 12px; margin-bottom: 4px;">Current Weight (kg)</label>
+                    <input type="number" id="current-weight-input" name="current_weight" step="0.1" value="{{ user_goals.current_weight }}" placeholder="e.g. 72.0" required style="padding: 6px 10px; font-size: 13px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="target-weight-input" style="font-size: 12px; margin-bottom: 4px;">Target Weight (kg)</label>
+                    <input type="number" id="target-weight-input" name="target_weight" step="0.1" value="{{ user_goals.target_weight }}" placeholder="e.g. 75.0" required style="padding: 6px 10px; font-size: 13px;">
+                </div>
+                
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn-submit" style="padding: 6px 12px; font-size: 13px; flex: 1;">Save</button>
+                    <button type="button" onclick="toggleProfileEdit()" class="btn-submit" style="padding: 6px 12px; font-size: 13px; flex: 1; background-color: var(--text-muted);">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="sidebar-card">
+            <h3><i class="fa-solid fa-chart-line"></i> Monthly Progress</h3>
+            <hr class="card-divider">
+
+            {% if graph_data and graph_data|length > 0 and graph_data != [5, 10, 15, 20] %}
+                <div class="graph-legend-table" style="margin-bottom: 20px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-weight: 600;">
+                                <th style="padding: 0 4px 8px 4px;">Points</th>
+                                <th style="padding: 0 4px 8px 4px;">Attendance Per Week</th>
+                            </tr>
+                        </thead>
+                        <tbody style="color: var(--text-main);">
+                            <tr style="border-bottom: 1px dashed var(--border-color);">
+                                <td style="padding: 10px 4px; font-weight: 800; color: #005fcc;">20 pts</td>
+                                <td style="padding: 10px 4px;">6+ days / week</td>
+                            </tr>
+                            <tr style="border-bottom: 1px dashed var(--border-color);">
+                                <td style="padding: 10px 4px; font-weight: 800; color: #0b7285;">15 pts</td>
+                                <td style="padding: 10px 4px;">4 - 5 days / week</td>
+                            </tr>
+                            <tr style="border-bottom: 1px dashed var(--border-color);">
+                                <td style="padding: 10px 4px; font-weight: 800; color: #1e7e34;">10 pts</td>
+                                <td style="padding: 10px 4px;">3 days / week</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 4px; font-weight: 800; color: var(--accent-color);">5 pts</td>
+                                <td style="padding: 10px 4px;">1 - 2 days / week</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="chart-wrapper">
+                    <canvas id="monthlyProgressChart" 
+                            data-labels="{{ graph_labels | tojson | forceescape }}" 
+                            data-scores="{{ graph_data | tojson | forceescape }}">
+                    </canvas>
+                </div>
+            {% else %}
+                <div style="padding: 40px 15px; text-align: center; color: var(--text-muted); font-size: 14px;">
+                    <p style="margin-bottom: 6px; font-weight: 600; color: var(--heading-color);">No Attendance Records Found</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </aside>
+
+</div>
+
+<script>
+    function toggleProfileEdit() {
+        const viewMode = document.getElementById('profile-view-mode');
+        const editMode = document.getElementById('profile-edit-mode');
+        const editBtn = document.getElementById('edit-profile-btn');
+        
+        if (editMode.style.display === 'none' || editMode.style.display === '') {
+            editMode.style.display = 'block';
+            viewMode.style.display = 'none';
+            editBtn.style.display = 'none';
+        } else {
+            editMode.style.display = 'none';
+            viewMode.style.display = 'block';
+            editBtn.style.display = 'inline-block';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const canvasEl = document.getElementById('monthlyProgressChart');
+        if (!canvasEl) return; 
+        
+        const ctx = canvasEl.getContext('2d');
+        const rawLabels = canvasEl.getAttribute('data-labels') || '[]';
+        const rawScores = canvasEl.getAttribute('data-scores') || '[]';
+        
+        const chartLabels = JSON.parse(rawLabels);
+        const chartScores = JSON.parse(rawScores);
+        
+        const computedStyles = getComputedStyle(document.documentElement);
+        const textMuted = computedStyles.getPropertyValue('--text-muted').trim() || '#6c757d';
+        const accentColor = computedStyles.getPropertyValue('--accent-color').trim() || '#dc3545';
+        const borderColor = computedStyles.getPropertyValue('--border-color').trim() || '#e9ecef';
+
+        const monthlyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels, 
+                datasets: [{
+                    label: 'Consistency Score',
+                    data: chartScores, 
+                    borderColor: accentColor, 
+                    backgroundColor: 'rgba(220, 53, 69, 0.08)', 
+                    borderWidth: 2.5,
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: accentColor
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 0,   
+                        max: 20,  
+                        ticks: { color: textMuted, stepSize: 5 },
+                        grid: { color: borderColor }
+                    },
+                    x: { ticks: { color: textMuted }, grid: { display: false } }
+                }
+            }
+        });
+
+        const observer = new MutationObserver(() => {
+            const updatedStyles = getComputedStyle(document.documentElement);
+            monthlyChart.data.datasets[0].borderColor = updatedStyles.getPropertyValue('--accent-color').trim();
+            monthlyChart.data.datasets[0].pointBackgroundColor = updatedStyles.getPropertyValue('--accent-color').trim();
+            monthlyChart.options.scales.y.ticks.color = updatedStyles.getPropertyValue('--text-muted').trim();
+            monthlyChart.options.scales.y.grid.color = updatedStyles.getPropertyValue('--border-color').trim();
+            monthlyChart.options.scales.x.ticks.color = updatedStyles.getPropertyValue('--text-muted').trim();
+            monthlyChart.update();
+        });
+        
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    });
+</script>
+{% endblock %}
