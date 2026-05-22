@@ -133,7 +133,9 @@
 </div>
 
 <script>
+    // This function switches the profile form between view mode and edit mode
     function toggleProfileEdit() {
+        // Grab the elements from the webpage using their HTML IDs
         const viewMode = document.getElementById('profile-view-mode');
         const editMode = document.getElementById('profile-edit-mode');
         const editBtn = document.getElementById('edit-profile-btn');
@@ -148,23 +150,27 @@
             editBtn.style.display = 'inline-block';
         }
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
+    
+        // Inspo for line chart: https://www.geeksforgeeks.org/javascript/chart-js-line-chart/ 
+        // Main chart set up, wait until the webpage loads entirely before drawing the chart
+        document.addEventListener("DOMContentLoaded", function() {
+        // Look for the canvas tag, where the chart is supposed to live
         const canvasEl = document.getElementById('monthlyProgressChart');
-        if (!canvasEl) return; 
+        if (!canvasEl) return; // chart is not appearing for new users that do not have any logs
         
         const ctx = canvasEl.getContext('2d');
+        // Grab the raw workout numbers sent over from the Python backend
         const rawLabels = canvasEl.getAttribute('data-labels') || '[]';
         const rawScores = canvasEl.getAttribute('data-scores') || '[]';
-        
+        // Convert them into real JavaScript arrays
         const chartLabels = JSON.parse(rawLabels);
         const chartScores = JSON.parse(rawScores);
-        
+        // Read theme colors directly from style.css
         const computedStyles = getComputedStyle(document.documentElement);
         const textMuted = computedStyles.getPropertyValue('--text-muted').trim() || '#6c757d';
         const accentColor = computedStyles.getPropertyValue('--accent-color').trim() || '#dc3545';
         const borderColor = computedStyles.getPropertyValue('--border-color').trim() || '#e9ecef';
-
+        // Draw line chart
         const monthlyChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -196,8 +202,10 @@
                 }
             }
         });
-
+        // Inspo for Mutation Observer: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver 
+        // Creating Mutation Observer to check which mode the user chooses
         const observer = new MutationObserver(() => {
+            // Apply the corresponding colors to line chart
             const updatedStyles = getComputedStyle(document.documentElement);
             monthlyChart.data.datasets[0].borderColor = updatedStyles.getPropertyValue('--accent-color').trim();
             monthlyChart.data.datasets[0].pointBackgroundColor = updatedStyles.getPropertyValue('--accent-color').trim();
