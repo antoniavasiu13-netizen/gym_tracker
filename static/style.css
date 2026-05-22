@@ -33,7 +33,7 @@ body.dark {
     --header-bg: #1e1e1e;
 }
 
-/* Layout */
+/* Layout, prevents elements from breaking out of the cards */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -58,7 +58,7 @@ body {
 /* Header and Navigation */
 .main-header {
     background-color: var(--header-bg);
-    border-bottom: 1px solid var(--border-color); /*keeps a seperate line*/
+    border-bottom: 1px solid var(--border-color); /* creates a line between header and content*/
     padding: 15px 0;
 }
 
@@ -222,6 +222,7 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 /* Exercise Library Grid System */
+/* tells the page how many columns fit on the user's screen */
 .exercise-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /*checks how many column fit on the screen*/
@@ -289,6 +290,7 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 /* Mobile responsive query*/
+/* stacks elements vertically on phone screens */
 @media (max-width: 600px) {
     .header-container {
         flex-direction: column;
