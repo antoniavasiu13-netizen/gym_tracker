@@ -78,33 +78,43 @@
     // Accessibility text reader
     function speakExercise(exerciseName, instructionsElementId) {
         window.speechSynthesis.cancel();
-
+        // Find the html paragraph holding the instructions text using the unique ID
         const instructionsText = document.getElementById(instructionsElementId).textContent;
-        const fullNarrative = `Exercise: ${exerciseName}. Instructions: ${instructionsText}`;
+        // Combine the exercise name and the instructions into one long script for the voice to read
+        const fullNarrative = Exercise: ${exerciseName}. Instructions: ${instructionsText};
+        // Create a new speech object containg the text script
         const utterance = new SpeechSynthesisUtterance(fullNarrative);
         
-        utterance.lang = 'en-US';
-        utterance.rate = 0.95; 
+        utterance.lang = 'en-US'; // Sets the voice accent to American English
+        utterance.rate = 0.95;    // Slows the speaking speed down slightly so its clear 
         
+        // Tell the browser to actually speak the text out loud
         window.speechSynthesis.speak(utterance);
     }
 
-    // Search bar
+    // Search bar. Grab the input search box and all the exercise cards on the page
     const searchInput = document.getElementById('library-search');
-    const cards = document.querySelectorAll('.searchable-card');
+    const cards = document.querySelectorAll('.searchable-card'); //Puts all exercise cards into a list
 
+    // Making sure the search input exists before trying to use it
     if (searchInput) {
+        // Listen for whenever the user types, deletes, or pastes text into the search bar
         searchInput.addEventListener('input', function(e) {
+            // Convert whatever the user typed into lowercase and strip empty spaces
             const query = e.target.value.toLowerCase().trim();
             
+            // Loop through every single exercise card in the list one by one
             cards.forEach(card => {
                 const title = card.querySelector('.exercise-title').textContent.toLowerCase();
                 const badge = card.querySelector('.card-badge').textContent.toLowerCase();
                 const metaText = card.querySelector('.exercise-meta').textContent.toLowerCase();
-                
+               
+                // Check if what the user typed matches any partof the title,badge or equipment text
                 if (title.includes(query) || badge.includes(query) || metaText.includes(query)) {
+                    // If it matches keep the card visible on the screen
                     card.style.display = "";  
                 } else {
+                    // If it does not match, hide the card from the view
                     card.style.display = "none";  
                 }
             });
