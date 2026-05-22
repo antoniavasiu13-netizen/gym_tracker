@@ -173,12 +173,12 @@ def dashboard():
                 data = json.loads(response.read().decode('utf-8'))
                 current = data.get('current_condition', [{}])[0]
                 
-                # 1. Get the temperature and description text directly
+                # Get the temperature and description text directly
                 weather_temp = f"{current.get('temp_C', '--')}°C"
                 desc = current.get('weatherDesc', [{}])[0].get('value', '').lower()
                 weather_desc = desc.capitalize()
                 
-                # 2. Dynamic icon checkers based on conditions
+                # Dynamic icon checkers based on conditions
                 if any(word in desc for word in ['rain', 'shower', 'storm', 'drizzle', 'sleet', 'snow', 'mist', 'fog']):
                     weather_icon = "fa-cloud-showers-heavy"
                     gym_recommendation = "Bad weather outside! Perfect day for a heavy indoor gym session."
