@@ -37,7 +37,7 @@ def home():
                 session['registered_accounts'] = accounts
                 session.modified = True  # Tell Flask to save the data update
                 
-            # For existing user! Check if the password matches their first password
+            # For existing user check if the password matches their first password
             if accounts[username] == password:
                 session['username'] = username
                 if remember:
@@ -240,7 +240,7 @@ def workout_info():
         body_part = request.form.get('body_part')
         intensity = request.form.get('intensity')
 
-        # Block following days, preventing the user from entering the wromg data
+        # Block following days, preventing the user from entering the wrong data
         if workout_date > today_str:
             return redirect(url_for('workout_info'))
 
