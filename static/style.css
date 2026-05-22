@@ -3,7 +3,7 @@
 /* Defining a color-blind friendly palette */
 /* Default theme: light */
 :root {
-    --bg-color: #FFF8E7;      /* Warm ream for background */
+    --bg-color: #FFF8E7;      /* Warm cream for background */
     --card-bg: #ffffff;       /* White cards */
     --border-color: #dbe0e6;   
     
