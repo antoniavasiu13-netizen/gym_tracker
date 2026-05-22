@@ -274,10 +274,5 @@ def library():
             except json.JSONDecodeError: exercises = []
     return render_template('library.html', exercises=exercises)
 
-# Timer route
-@app.route('/timer')
-def timer():
-    return render_template('timer.html')
-
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)
