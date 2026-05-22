@@ -21,8 +21,7 @@
                 {% if session.get('username') %}
                     <a href="{{ url_for('dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('workout_info') }}">Workout Tracker</a>
-                    <a href="{{ url_for('library') }}">Workout Exercises</a>
-                    <a href="{{ url_for('timer') }}">Timer</a> 
+                    <a href="{{ url_for('library') }}">Workout Exercises</a> 
                     <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
                 {% endif %}
                 
