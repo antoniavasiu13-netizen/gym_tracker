@@ -85,112 +85,131 @@
 <div id="raw-history-data" data-logs="[ {% for entry in personal_history %}&quot;{{ entry.date }}&quot;{% if not loop.last %},{% endif %}{% endfor %} ]" style="display: none;"></div>
 
 <script>
-    // Wait until the browser fully reads and constructs the page layout before running
-    document.addEventListener("DOMContentLoaded", function() {
-        // Grab the calendar container and control the buttons from the html layout
-        const gridContainer = document.getElementById('tracker-calendar-days-grid');
-        const monthYearLabel = document.getElementById('tracker-calendar-month-year');
-        const historyAnchor = document.getElementById('raw-history-data');
-        const prevBtn = document.getElementById('prev-month-btn');
-        const nextBtn = document.getElementById('next-month-btn');
+// Inspo for calendar: https://www.geeksforgeeks.org/javascript/how-to-create-a-dynamic-calendar-in-html-css-javascript/
+// Grab different pieces of our webpage by ID
+const gridContainer = document.getElementById('tracker-calendar-days-grid');
+const monthYearLabel = document.getElementById('tracker-calendar-month-year');
+const historyAnchor = document.getElementById('raw-history-data');
+const prevBtn = document.getElementById('prev-month-btn');
+const nextBtn = document.getElementById('next-month-btn');
 
-        //Exit if any essential layout parts are missing to anoid browser errors
-        if (!gridContainer || !historyAnchor || !prevBtn || !nextBtn) return;
+// Pull the list of the completed workout dates sent over from Python
+let rawLoggedDates = [];
+if (historyAnchor) {
+    // Convert the string into a list of dates that Java can read
+    rawLoggedDates = JSON.parse(historyAnchor.getAttribute('data-logs') || '[]');
+}
 
-        //Grab the list of the workouts dates passed from python
-        const rawLoggedDates = JSON.parse(historyAnchor.getAttribute('data-logs') || '[]');
-        //Pin today's real date ad create a point at day 1 for this month
-        const trueToday = new Date();
-        let activeViewDate = new Date(trueToday.getFullYear(), trueToday.getMonth(), 1);
-        //Array for months in order to translate month index (0 to 11) into clean text title
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+// Grab actual real-life date
+let today = new Date();
+let currentMonth = today.getMonth(); // Store months as a number (0-11)
+let currentYear = today.getFullYear();
 
-        //Calendar building machine, runs every time we change months
-        function buildCalendarView() {
-            const currentYear = activeViewDate.getFullYear();
-            const currentMonth = activeViewDate.getMonth(); 
+// Rename months into text strings 
+let months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+];
 
-            //Update the title header on the screen eg. May 2026
-            monthYearLabel.textContent = ${monthNames[currentMonth]} ${currentYear};
-            //Remove old calendar before rendering the new one
-            gridContainer.innerHTML = '';
-            //Calculate the days of the months, putting day 0 of the next month as the last of this month
-            const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            //Find out what day of the week the 1st falls (0 = Sunday etc)
-            let firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
-            //Remap Sunday from 0 to 6 so our calendar grid starts on Monday
-            firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1; 
+// Function to dispaly the calendar grid
+function showCalendar(month, year) {
+    if (!gridContainer) return;
 
-            //Create placeholder blocks to slide the 1st of the month to its correct column
-            for (let i = 0; i < firstDayIndex; i++) {
-                const padNode = document.createElement('div');
-                padNode.classList.add('calendar-day-box', 'empty-pad');
-                padNode.style.backgroundColor = 'transparent';
-                padNode.style.pointerEvents = 'none'; //lock interctions on blank cells
-                gridContainer.appendChild(padNode);
-            }
+    // Change the text at the top of the calendar to show the active month, year
+    monthYearLabel.textContent = `${months[month]} ${year}`;
 
-            //Dat creator loop, generate squares for every actual day of this month
-            for (let day = 1; day <= totalDaysInMonth; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.classList.add('calendar-day-box');
-                dayCell.textContent = day; //put the actual date number in the square
+    // Clear old visual grids completely before rebuilding
+    gridContainer.innerHTML = '';
 
-                //Define format YYYY-MM-DD
-                const currentStringDay = ${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')};
-                //Apply square proportions and positioning styles using Java
-                dayCell.style.aspectRatio = '1';
-                dayCell.style.display = 'flex';
-                dayCell.style.alignItems = 'center';
-                dayCell.style.justifyContent = 'center';
-                dayCell.style.fontSize = '13px';
-                dayCell.style.fontWeight = '600';
-                dayCell.style.borderRadius = '6px';
+    // Calculate total days in selected month using system Date math
+    let totalDaysInMonth = daysInMonth(month, year);
+    
+    // Find week day index of the first calendar day (0 = Sun)
+    let firstDayIndex = new Date(year, month, 1).getDay();
+    
+    // Shift index calculations so that weeks begin on Monday instead of Sunday
+    firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1; 
 
-                //Attendance checker
-                if (rawLoggedDates.includes(currentStringDay)) { 
-                    //if user logged a session put green in the calendar
-                    dayCell.style.backgroundColor = '#2b9348'; 
-                    dayCell.style.color = '#ffffff';
-                    dayCell.setAttribute('title', 'Logged Training Session!');
-                } else {
-                    //otherwise leave the block as it is
-                    dayCell.style.backgroundColor = 'var(--border-color)';
-                    dayCell.style.color = 'var(--text-main)';
-                }
+    // Create empty blocks so the 1st of the month is allocated in the right column
+    for (let i = 0; i < firstDayIndex; i++) {
+        let padNode = document.createElement('div');
+        padNode.classList.add('calendar-day-box', 'empty-pad');
+        padNode.style.backgroundColor = 'transparent';
+        padNode.style.pointerEvents = 'none'; // make it unclickable
+        gridContainer.appendChild(padNode);
+    }
 
-                //if the card we are drawing is the actual real life today, wrap it in a highlight border
-                if (day === trueToday.getDate() && currentMonth === trueToday.getMonth() && currentYear === trueToday.getFullYear()) {
-                    dayCell.style.outline = '2px solid var(--accent-color)';
-                    dayCell.style.outlineOffset = '-2px';
-                }
-                //Add the new cell into the visible webpage calendar matrix grid
-                gridContainer.appendChild(dayCell);
-            }
+    // Loop through and create a clickable square for every day in the month
+    for (let date = 1; date <= totalDaysInMonth; date++) {
+        let dayCell = document.createElement('div');
+        dayCell.classList.add('calendar-day-box');
+        dayCell.textContent = date;
 
-            //Stops the user on scrolling down in the upcoming months
-            if (currentYear >= trueToday.getFullYear() && currentMonth >= trueToday.getMonth()) {
-                nextBtn.style.opacity = "0.25";
-                nextBtn.style.pointerEvents = "none"; //blocks clicking interactions
-            } else {
-                nextBtn.style.opacity = "1";
-                nextBtn.style.pointerEvents = "auto"; //unblock clicking interactions
-            }
+        // Format into YYYY-MM-DD
+        let currentStringDay = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+
+        // Inline grid alignment styling rules
+        dayCell.style.aspectRatio = '1';
+        dayCell.style.display = 'flex';
+        dayCell.style.alignItems = 'center';
+        dayCell.style.justifyContent = 'center';
+        dayCell.style.fontSize = '13px';
+        dayCell.style.fontWeight = '600';
+        dayCell.style.borderRadius = '6px';
+
+        // Check if there are training logs on this specific date
+        if (rawLoggedDates.includes(currentStringDay)) { 
+            dayCell.style.backgroundColor = '#2b9348'; // Green marker
+            dayCell.style.color = '#ffffff';
+            dayCell.setAttribute('title', 'Logged Training Session!');
+        } else {
+            dayCell.style.backgroundColor = 'var(--border-color)';
+            dayCell.style.color = 'var(--text-main)';
         }
 
-        //Updates our active month tracking pointer and builds a fresh layout
-        prevBtn.addEventListener('click', function() {
-            activeViewDate.setMonth(activeViewDate.getMonth() - 1); //subtract 1 month index
-            buildCalendarView();
-        });
+        gridContainer.appendChild(dayCell);
+    }
 
-        nextBtn.addEventListener('click', function() {
-            activeViewDate.setMonth(activeViewDate.getMonth() + 1); //add 1 month index
-            buildCalendarView();
-        });
+    // Disable moving into the future
+    if (year >= today.getFullYear() && month >= today.getMonth()) {
+        nextBtn.style.opacity = "0.25";
+        nextBtn.style.pointerEvents = "none";
+    } else {
+        nextBtn.style.opacity = "1";
+        nextBtn.style.pointerEvents = "auto";
+    }
+}
 
-        //initialize calendar generator to compile the view when the dashboard load up
-        buildCalendarView();
-    });
+// Function to navigate to the next month
+function next() {
+    currentYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    currentMonth = (currentMonth + 1) % 12;
+    showCalendar(currentMonth, currentYear);
+}
+
+// Function to navigate to the previous month
+function previous() {
+    currentYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    showCalendar(currentMonth, currentYear);
+}
+
+// Helper function to find the number of days in a month 
+function daysInMonth(iMonth, iYear) {
+    return new Date(iYear, iMonth + 1, 0).getDate();
+}
+
+// Make the navigation arrows clickable
+if (prevBtn && nextBtn) {
+    prevBtn.addEventListener('click', previous);
+    nextBtn.addEventListener('click', next);
+}
+
+// Initial execution call once the DOM finishes loading
+document.addEventListener("DOMContentLoaded", function() {
+    if (gridContainer && historyAnchor && prevBtn && nextBtn) {
+        showCalendar(currentMonth, currentYear);
+    }
+});
 </script>
 {% endblock %}
